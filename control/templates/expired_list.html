@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+    <h1 class="mb-4">الاشتراكات المنتهية</h1>
+    <div class="row">
+        {% for subscriber in subscribers %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-glass">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ subscriber.name }}</h5>
+                        <p class="card-text text-danger">
+                            انتهى الاشتراك في: {{ subscriber.end_date|arabic_date }}
+                        </p>
+                        <div class="d-flex flex-column action-buttons">
+                            <form method="post" action="{% url 'renew_subscriber' subscriber.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">تجديد (شهر)</button>
+                            </form>
+                            <form method="post" action="{% url 'delete_subscriber' subscriber.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">حذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col">
+                <div class="alert alert-info">لا توجد اشتراكات منتهية.</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

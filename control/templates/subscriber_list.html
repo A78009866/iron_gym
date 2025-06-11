@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load custom_filters %} {# تحميل الفلاتر المخصصة #}
+
+{% block content %}
+    <h1 class="mb-4">قائمة المشتركين النشطين</h1>
+    <div class="row">
+        {% for subscriber in subscribers %}
+            <div class="col-md-4">
+                <div class="card card-glass">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ subscriber.name }}</h5>
+                        <p class="card-text">
+                            <strong>مر من اشتراكه:</strong> {{ subscriber.elapsed_days }} يوم
+                        </p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">تاريخ البدء: {{ subscriber.start_date|arabic_date }}</li>
+                            <li class="list-group-item">تاريخ الانتهاء: {{ subscriber.end_date|arabic_date }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col">
+                <div class="alert alert-info">لا يوجد مشتركين نشطين حاليًا.</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
