@@ -43,9 +43,18 @@ def renew_subscriber(request, pk):
     subscriber.save()
     return redirect('subscriber_list')
 
-@login_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import Subscriber
+
+@require_POST
 def delete_subscriber(request, pk):
-    subscriber = get_object_or_404(Subscriber, pk=pk)
-    if request.method == 'POST':
+    try:
+        subscriber = Subscriber.objects.get(id=pk)
         subscriber.delete()
-    return redirect('expired_list')
+        return JsonResponse({'success': True})
+    except Subscriber.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'المشترك غير موجود'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})
+
