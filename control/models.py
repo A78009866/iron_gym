@@ -1,26 +1,21 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils import timezone
+import datetime
 
-class Subscriber(models.Model):
-    name = models.CharField(max_length=100, verbose_name="اسم المشترك")
-    start_date = models.DateField(verbose_name="تاريخ بدء الاشتراك")
-    end_date = models.DateField(verbose_name="تاريخ انتهاء الاشتراك")
+class Subscription(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    requested_duration = models.IntegerField(default=30) # المدة المطلوبة بالأيام
+    end_date = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return f"{self.user.username}'s Subscription"
 
     @property
-    def is_active(self):
-        """
-        خاصية للتحقق مما إذا كان الاشتراك لا يزال ساريًا
-        """
-        return timezone.now().date() <= self.end_date
-
-    @property
-    def elapsed_days(self):
-        """
-        خاصية لحساب عدد الأيام التي مرت منذ بدء الاشتراك
-        """
-        if timezone.now().date() >= self.start_date:
-            return (timezone.now().date() - self.start_date).days
-        return 0
+    def remaining_days(self):
+        if self.is_active and self.end_date:
+            remaining = self.end_date - timezone.now()
+            # إرجاع 0 إذا كانت المدة قد انتهت
+            return max(0, remaining.days)
+        return None

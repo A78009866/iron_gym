@@ -1,16 +1,14 @@
-# members/urls.py
-
 from django.urls import path
 from . import views
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', views.subscriber_list, name='subscriber_list'),
-    path('add/', views.add_subscriber, name='add_subscriber'),
-    path('expired/', views.expired_list, name='expired_list'),
-    path('renew/<int:pk>/', views.renew_subscriber, name='renew_subscriber'),
-    path('delete/<int:pk>/', views.delete_subscriber, name='delete_subscriber'),
+    path('', views.home_view, name='home'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('approve/<int:sub_id>/', views.approve_subscription, name='approve_subscription'),
+    path('user/<int:user_id>/', views.user_detail_view, name='user_detail'), # URL for user details
+    path('renew/admin/<int:sub_id>/', views.renew_subscription_admin, name='renew_subscription_admin'), # URL for admin renewal
+    path('renew/user/', views.renew_subscription_user, name='renew_subscription_user'), # URL for user renewal
+    path('delete_user/<int:user_id>/', views.delete_user_view, name='delete_user'), # New URL for deleting user
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

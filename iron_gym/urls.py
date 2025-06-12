@@ -6,11 +6,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # استخدام المسار 'login/' لتسجيل الدخول
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
-    # استخدام المسار 'logout/' لتسجيل الخروج
-    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
-    # تضمين روابط تطبيق members
     path('', include('control.urls')),
 ]
 if settings.DEBUG:

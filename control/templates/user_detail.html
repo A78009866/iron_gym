@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}تفاصيل المستخدم - {{ user_obj.username }}{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="max-width: 600px; width: 100%;">
+    <h2><i class="fas fa-user-circle"></i> تفاصيل المستخدم: {{ user_obj.username }}</h2>
+    
+    <div class="user-details-grid">
+        <div class="detail-item">
+            <strong>اسم المستخدم:</strong>
+            <div class="detail-value">{{ user_obj.username }}</div>
+        </div>
+        <div class="detail-item">
+            <strong>تاريخ الانضمام:</strong>
+            <div class="detail-value">{{ user_obj.date_joined|date:"Y-m-d" }}</div>
+        </div>
+    </div>
+    
+    <h3 style="margin-top: 30px;"><i class="fas fa-id-card"></i> تفاصيل الاشتراك</h3>
+    {% if subscription %}
+        <div class="user-details-grid">
+            <div class="detail-item">
+                <strong>حالة الاشتراك:</strong>
+                <div class="detail-value">
+                    {% if subscription.is_active %}
+                        <span style="color: #d4edda; background-color: rgba(40, 167, 69, 0.8); padding: 5px 10px; border-radius: 8px;">
+                            <i class="fas fa-check-circle"></i> نشط
+                        </span>
+                    {% else %}
+                        <span style="color: #f8d7da; background-color: rgba(220, 53, 69, 0.8); padding: 5px 10px; border-radius: 8px;">
+                            <i class="fas fa-hourglass-half"></i> معلق
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if subscription.is_active %}
+                <div class="detail-item">
+                    <strong>تاريخ انتهاء الاشتراك:</strong>
+                    <div class="detail-value">{{ subscription.end_date|date:"Y-m-d" }}</div>
+                </div>
+                <div class="detail-item">
+                    <strong>الأيام المتبقية:</strong>
+                    <div class="detail-value">
+                        {% if subscription.remaining_days is not None and subscription.remaining_days > 0 %}
+                            {{ subscription.remaining_days }} يوم
+                        {% else %}
+                            <span style="color: #ffc107;">انتهى الاشتراك</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <h4 style="margin-top: 20px;"><i class="fas fa-sync-alt"></i> تجديد الاشتراك لهذا المستخدم:</h4>
+        
+        {# Conditionally display the renewal form based on subscription status #}
+        {% if subscription.remaining_days is not None and subscription.remaining_days <= 0 %}
+            <form action="{% url 'renew_subscription_admin' subscription.id %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="renew_duration_user_detail">المدة:</label>
+                    <select id="renew_duration_user_detail" name="duration" class="form-control" required>
+                        <option value="15">15 يوم</option>
+                        <option value="30">1 شهر</option>
+                        <option value="60">2 شهر</option>
+                        <option value="90">3 شهر</option>
+                        <option value="180">6 أشهر</option>
+                        <option value="365">1 سنة</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-redo-alt"></i> تجديد الاشتراك</button>
+            </form>
+        {% else %}
+            <p style="color: rgba(255,255,255,0.7); font-style: italic;">
+                <i class="fas fa-info-circle"></i> خيار التجديد متاح فقط عند انتهاء الاشتراك.
+            </p>
+        {% endif %}
+
+    {% else %}
+        <p>لا يوجد اشتراك مرتبط بهذا المستخدم حالياً.</p>
+    {% endif %}
+
+    <div style="margin-top: 40px; text-align: center; display: flex; justify-content: space-between; align-items: center;">
+        <a href="{% url 'dashboard' %}" class="btn" style="background-color: #6c757d; color: white; flex-grow: 1; margin-left: 10px;">
+            <i class="fas fa-arrow-right-to-bracket"></i> العودة إلى لوحة التحكم
+        </a>
+    </div>
+    <div>
+        <form action="{% url 'delete_user' user_obj.id %}" method="post" onsubmit="return confirm('هل أنت متأكد أنك تريد حذف هذا المستخدم؟ هذا الإجراء لا يمكن التراجع عنه.');" style="flex-grow: 1; margin-right: 10px;">
+            {% csrf_token %}
+            <button type="button" class="btn" style="background-color: #dc3545; color: white; flex-grow: 1; margin-right: 10px;" id="openDeleteModalBtn">
+            <i class="fas fa-trash-alt"></i> حذف المشترك
+        </button>
+        </form>
+    </div>
+</div>
+{# Delete Confirmation Modal #}
+<div id="deleteConfirmationModal" class="modal">
+    <div class="modal-content glass-card">
+        <span class="close-button">&times;</span>
+        <h3 style="color: var(--primary-color);"><i class="fas fa-exclamation-triangle"></i> تأكيد الحذف</h3>
+        <p style="margin: 20px 0; font-size: 1.1em;">
+            هل أنت متأكد أنك تريد حذف المستخدم <strong style="color: var(--primary-color);">"{{ user_obj.username }}"</strong>؟
+            هذا الإجراء لا يمكن التراجع عنه.
+        </p>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-cancel" id="cancelDeleteBtn">إلغاء</button>
+            <form action="{% url 'delete_user' user_obj.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">تأكيد الحذف</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the modal and buttons
+    const modal = document.getElementById('deleteConfirmationModal');
+    const openBtn = document.getElementById('openDeleteModalBtn');
+    const closeBtn = document.querySelector('.close-button');
+    const cancelBtn = document.getElementById('cancelDeleteBtn');
+
+    // Open the modal when the delete button is clicked
+    if (openBtn) {
+        openBtn.onclick = function() {
+            modal.style.display = 'flex';
+        }
+    }
+
+    // Close the modal when the 'x' or 'إلغاء' button is clicked
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+    }
+    if (cancelBtn) {
+        cancelBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

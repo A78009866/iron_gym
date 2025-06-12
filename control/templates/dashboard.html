@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}لوحة التحكم - IRON GYM{% endblock %}
+
+{% block content %}
+{% if request.user.is_superuser %}
+    <h2 style="text-align: center; width: 100%;"><i class="fas fa-user-shield"></i> لوحة تحكم المسؤول</h2>
+
+    <div class="glass-card" style="width: 100%;">
+        <h3><i class="fas fa-clock"></i> طلبات الاشتراك المعلقة</h3>
+        {% if pending_subscriptions %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>المستخدم</th>
+                            <th>المدة المطلوبة</th>
+                            <th>الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in pending_subscriptions %}
+                        <tr>
+                            <td data-label="المستخدم">{{ sub.user.username }}</td>
+                            <td data-label="المدة المطلوبة">{{ sub.requested_duration }} أيام</td>
+                            <td data-label="الإجراء">
+                                <a href="{% url 'approve_subscription' sub.id %}" class="btn" style="background: #28a745; color: white; padding: 8px 15px;">
+                                    <i class="fas fa-check"></i> موافقة
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>لا توجد طلبات اشتراك معلقة حالياً.</p>
+        {% endif %}
+    </div>
+
+    <div class="glass-card" style="width: 100%;">
+        <h3><i class="fas fa-users"></i> الاشتراكات النشطة</h3>
+        {% if active_subscriptions %}
+            <div class="active-subscriptions-grid"> {# New grid container for cards #}
+                {% for sub in active_subscriptions %}
+                <a href="{% url 'user_detail' sub.user.id %}" class="subscription-card"> {# Link the entire card #}
+                    <h4><i class="fas fa-user"></i> {{ sub.user.username }}</h4>
+                    <p>
+                        <strong>الحالة:</strong> 
+                        {% if sub.is_active and sub.remaining_days > 0 %}
+                            <span style="color: #d4edda; background-color: rgba(40, 167, 69, 0.8); padding: 5px 10px; border-radius: 8px;">
+                                <i class="fas fa-check-circle"></i> نشط
+                            </span>
+                        {% else %}
+                            <span style="color: #ffc107; background-color: rgba(255, 193, 7, 0.8); padding: 5px 10px; border-radius: 8px;">
+                                <i class="fas fa-exclamation-triangle"></i> منتهي / معلق
+                            </span>
+                        {% endif %}
+                    </p>
+                    <p class="details-link">عرض التفاصيل <i class="fas fa-arrow-left"></i></p>
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>لا توجد اشتراكات نشطة حالياً.</p>
+        {% endif %}
+    </div>
+
+{% else %}
+    <h2 style="text-align: center;"><i class="fas fa-user"></i> لوحة تحكم المشترك</h2>
+
+    <div class="glass-card" style="max-width: 600px; width: 100%;">
+        {% if subscription %}
+            <h3><i class="fas fa-id-card"></i> حالة اشتراكك</h3>
+            
+            <div class="user-details-grid"> {# Re-using the same grid style for user's own details #}
+                <div class="detail-item">
+                    <strong>اسم المستخدم:</strong>
+                    <div class="detail-value">{{ subscription.user.username }}</div>
+                </div>
+                <div class="detail-item">
+                    <strong>حالة الاشتراك:</strong>
+                    <div class="detail-value">
+                        {% if subscription.is_active %}
+                            <span style="color: #d4edda; background-color: rgba(40, 167, 69, 0.8); padding: 5px 10px; border-radius: 8px;">
+                                <i class="fas fa-check-circle"></i> نشط
+                            </span>
+                        {% else %}
+                            <span style="color: #f8d7da; background-color: rgba(220, 53, 69, 0.8); padding: 5px 10px; border-radius: 8px;">
+                                <i class="fas fa-hourglass-half"></i> معلق
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if subscription.is_active %}
+                    <div class="detail-item">
+                        <strong>تاريخ انتهاء الاشتراك:</strong>
+                        <div class="detail-value">{{ subscription.end_date|date:"Y-m-d" }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <strong>الأيام المتبقية:</strong>
+                        <div class="detail-value">
+                            {% if subscription.remaining_days is not None and subscription.remaining_days > 0 %}
+                                {{ subscription.remaining_days }} يوم
+                            {% else %}
+                                <span style="color: #ffc107;">انتهى الاشتراك</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div style="margin-top: 15px;">
+                {% if subscription.remaining_days is not None and subscription.remaining_days <= 0 %}
+                    <form action="{% url 'renew_subscription_user' %}" method="post">
+                        {% csrf_token %}
+                        <label for="renew_duration" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--primary-color);">تجديد الاشتراك:</label>
+                        <select id="renew_duration" name="duration" class="form-control" required style="width: auto; display: inline-block; margin-right: 10px; background: rgba(0, 0, 0, 0.3);">
+                            <option value="15">15 يوم</option>
+                            <option value="30">1 شهر</option>
+                            <option value="60">2 شهر</option>
+                            <option value="90">3 شهر</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-redo-alt"></i> تجديد الآن
+                        </button>
+                    </form>
+                {% else %}
+                    <p style="color: rgba(255,255,255,0.7); font-style: italic;">
+                        <i class="fas fa-info-circle"></i> سيظهر خيار التجديد عند انتهاء اشتراكك.
+                    </p>
+                {% endif %}
+            </div>
+        {% else %}
+            <h3><i class="fas fa-exclamation-circle"></i> لا يوجد اشتراك</h3>
+            <p>لا يوجد اشتراك مرتبط بحسابك. يرجى <a href="{% url 'home' %}">تقديم طلب اشتراك جديد</a>.</p>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

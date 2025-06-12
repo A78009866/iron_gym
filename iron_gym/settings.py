@@ -76,10 +76,16 @@ WSGI_APPLICATION = 'iron_gym.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'iron_gym',
+        'USER': 'iron_gym_user',
+        'PASSWORD': 'SQ7zgwjJELoSWyy4WU6VcNXfkMPKStWP',
+        'HOST': 'dpg-d14ua93uibrs739ejchg-a.oregon-postgres.render.com',  # اسم المضيف فقط بدون "postgresql://" أو أي إضافات أخرى
+        'PORT': '5432',
     }
 }
+import dj_database_url
+
 
 
 # Password validation
@@ -128,5 +134,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = '/'
+# في settings.py
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'

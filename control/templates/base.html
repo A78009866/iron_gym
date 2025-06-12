@@ -3,113 +3,583 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iron Gym</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <title>{% block title %}IRON GYM{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #ffd700; /* Yellow */
+            --secondary-color: #1a1a1a; /* Dark Gray/Black */
+            --text-color: #ffffff;
+            --glass-bg: rgba(26, 26, 26, 0.6);
+            --border-color: rgba(255, 215, 0, 0.3);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            /* 1. تم تغيير الخلفية لواحدة أفضل للتباين */
-            background-image: url('/media/iron.jpg');
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
             font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            color: var(--text-color);
+            background: var(--secondary-color) url('http://googleusercontent.com/image_generation_content/0') no-repeat center center/cover;
+            background-attachment: fixed;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            overflow-x: hidden;
+            position: relative;
         }
-        .navbar-glass {
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: -1;
         }
-        .navbar-brand, .nav-link {
-            color: white !important;
-            font-weight: bold;
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px) saturate(150%);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+            padding: 30px;
+            margin-bottom: 20px;
+            text-align: center;
         }
-        .card-glass {
-            background: rgba(20, 20, 20, 0.6);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+
+        .container {
+            width: 100%;
+            max-width: 1200px; /* Kept existing max-width for overall content */
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
             border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            color: white;
+            border: 1px solid var(--border-color);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
             margin-bottom: 20px;
         }
-        .card-glass .list-group-item {
-            background-color: transparent;
-            border-color: rgba(255, 255, 255, 0.2);
-            color: white;
+
+        header .logo {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            text-shadow: 0 0 10px var(--primary-color);
+            display: flex; /* To align image and text */
+            align-items: center;
+            gap: 10px; /* Space between image and text */
         }
-        h1, h5 {
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+
+        header .logo img { /* Style for the new logo image */
+            height: 40px; /* Adjust as needed */
+            width: auto;
+            border-radius: 10px;
+
         }
-        /* 2. تحسينات للهاتف */
-        .action-buttons form {
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 10px;
+            transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav a:hover, nav a.active {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             width: 100%;
-            margin-bottom: 10px;
         }
-        .action-buttons .btn {
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            border-top: 1px solid var(--border-color);
+            padding: 15px;
             width: 100%;
         }
-        /* تغيير تخطيط الأزرار في الشاشات الأكبر */
-        @media (min-width: 576px) {
-            .action-buttons {
-                flex-direction: row !important;
-            }
-            .action-buttons form {
-                width: auto;
-                margin-bottom: 0;
-                margin-left: 10px; /* استخدام margin-left في RTL يعادل margin-right في LTR */
-            }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Tables for Admin Dashboard */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            min-width: 500px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 215, 0, 0.1);
         }
         
+        h2, h3 {
+            color: var(--primary-color);
+            text-shadow: 0 0 5px rgba(0,0,0,0.7);
+            margin-bottom: 20px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive design for mobile */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+            }
+
+            nav a {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .glass-card {
+                padding: 20px;
+            }
+
+            /* Card-like display for tables on small screens */
+            .data-table thead {
+                display: none;
+            }
+
+            .data-table tr {
+                display: block;
+                border: 1px solid var(--border-color);
+                border-radius: 15px;
+                margin-bottom: 15px;
+                padding: 15px;
+            }
+
+            .data-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 0;
+                border-bottom: 1px dashed rgba(255, 215, 0, 0.2);
+            }
+            
+            .data-table td:last-child {
+                border-bottom: none;
+            }
+
+            .data-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--primary-color);
+                text-align: right;
+                padding-left: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+        /* New styles for subscription cards in dashboard */
+.active-subscriptions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.subscription-card {
+    background: rgba(255, 255, 255, 0.08); /* Lighter glass effect for cards */
+    backdrop-filter: blur(8px) saturate(180%);
+    -webkit-backdrop-filter: blur(8px) saturate(180%);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 215, 0, 0.2); /* Lighter border */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-color); /* Ensure text is readable */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.subscription-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+    background: rgba(255, 215, 0, 0.1); /* Slight highlight on hover */
+}
+
+.subscription-card h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 1.3em;
+}
+
+.subscription-card p {
+    font-size: 0.95em;
+    margin-bottom: 5px;
+}
+
+.subscription-card .details-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+/* Styles for user details in user_detail.html */
+.user-details-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to single column */
+    gap: 15px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+@media (min-width: 768px) {
+    .user-details-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Two columns on larger screens */
+    }
+}
+
+.detail-item {
+    background: rgba(255, 255, 255, 0.05); /* Slightly lighter glass effect */
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px solid rgba(255, 215, 0, 0.15); /* Soft border */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.detail-item strong {
+    display: block;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.detail-item .detail-value {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+/* Styles for user details in user_detail.html (and now dashboard.html for user) */
+.user-details-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to single column */
+    gap: 15px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+@media (min-width: 768px) {
+    .user-details-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Two columns on larger screens */
+    }
+}
+
+.detail-item {
+    background: rgba(255, 255, 255, 0.05); /* Slightly lighter glass effect */
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px solid rgba(255, 215, 0, 0.15); /* Soft border */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.detail-item strong {
+    display: block;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.detail-item .detail-value {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+/* Modal Styles for glassmorphism confirmation */
+/* Modal Styles for glassmorphism confirmation */
+.modal {
+    display: none; /* <-- تأكد أن هذه الخاصية موجودة هنا */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity for overlay */
+    /* display: flex; /* <-- هذه السطر يجب حذفه أو التعليق عليه */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+}
+
+.modal-content {
+    background: var(--glass-bg); /* Use your existing glass background variable */
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border-radius: 20px; /* More rounded corners */
+    border: 1px solid var(--border-color); /* Glass border */
+    box-shadow: 0 8px 32px var(--shadow-color); /* Deeper shadow */
+    padding: 30px;
+    max-width: 450px; /* Slightly wider modal */
+    width: 90%;
+    text-align: center;
+    position: relative; /* For absolute positioning of close button */
+    color: var(--text-color); /* Ensure text is readable */
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.modal-content p {
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+.close-button {
+    color: var(--primary-color);
+    font-size: 30px;
+    font-weight: bold;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #fff;
+    text-decoration: none;
+}
+
+.modal-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-around;
+    gap: 15px; /* Space between buttons */
+}
+
+.modal-actions .btn {
+    flex: 1; /* Make buttons take equal width */
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-actions .btn-danger {
+    background-color: #dc3545; /* Red for delete */
+    border: none;
+}
+
+.modal-actions .btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+.modal-actions .btn-cancel {
+    background-color: #6c757d; /* Gray for cancel */
+    border: none;
+}
+
+.modal-actions .btn-cancel:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
+
+/* Ensure default .btn styles don't override modal button styles */
+.modal-actions .btn[type="submit"] {
+    width: auto; /* Override 100% width from general .btn */
+}
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-glass mb-4">
-        <div class="container">
-<a class="navbar-brand d-flex align-items-center" href="{% url 'subscriber_list' %}">
-                <!-- إضافة الشعار هنا -->
-                <img src="/media/gym.jpg" alt="Iron Gym Logo" height="30" class="me-2 rounded" style="object-fit: contain;">
-                IRON GYM
-            </a>            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'subscriber_list' %}">المشتركين النشطين</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'add_subscriber' %}">إضافة مشترك</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'expired_list' %}">الاشتراكات المنتهية</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <form action="{% url 'logout' %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-link nav-link">تسجيل الخروج</button>
-                            </form>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <header>
+        <a href="{% url 'home' %}" class="logo">
+            <img src="/media/gym.jpg" alt="IRON GYM Logo"> IRON GYM
+        </a>
+        <nav>
+            <ul>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a></li>
+                    <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+                {% else %}
+                    <li><a href="{% url 'home' %}"><i class="fas fa-user-plus"></i> تسجيل اشتراك جديد</a></li>
+                    <li><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
 
-    <div class="container pb-4">
+    <main class="container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         {% block content %}
         {% endblock %}
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </main>
+
+    <footer>
+        <p>© 2025 IRON GYM. جميع الحقوق محفوظة.</p>
+    </footer>
 </body>
 </html>
